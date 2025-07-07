@@ -11,20 +11,29 @@ class DatabaseAnalysis:
     def __init__(self, db_path='savi_dados_unificado.db'):
         self.db_path = db_path
         self.procedimento_valores = {
-            '60010150': 53.12,  # CONSULTA/SESSAO PSICOPEDAGOGIA - TEA
-            '00010014': 89.75,  # PSIQUIATRIA DA INFANCIA
-            '60010142': 125.50, # Teste neuropsicologico
-            '00010015': 67.40,  # CONSULTA MEDICA ESPECIALIZADA
-            '60010143': 180.00, # AVALIACAO NEUROPSICOLOGICA
-            '60010144': 45.80,  # TERAPIA OCUPACIONAL
-            '60010145': 38.90,  # FONOAUDIOLOGIA
-            '60010146': 42.30   # FISIOTERAPIA NEUROLOGICA
+            '60010150': 53.12,   # CONSULTA/SESSAO PSICOPEDAGOGIA - TEA
+            '62010204': 53.12,   # SESSAO DE FISIOTERAPIA PARA TEA
+            '62010212': 53.12,   # SESSAO MUSICOTERAPIA
+            '65010035': 53.12,   # CONSULTA/ SESSAO NUTRICAO TEA
+            '60010126': 53.12,   # PSICOTERAPIA TEA
+            '61010073': 53.12,   # FONOAUDIOLOGIA TEA
+            '62010123': 53.12,   # TERAPIA OCUPACIONAL TEA
+
+            '00010014': 80.00,   # PSIQUIATRIA DA INFANCIA
+            '00010015': 67.40,   # CONSULTA MEDICA ESPECIALIZADA
+            '60010142': 800.00,  # Teste neuropsicologico
+            '60010143': 180.00,  # AVALIACAO NEUROPSICOLOGICA
+            '60010363': 100.00,  # Consulta/sessao de neuropsicologia
+
+            '60010144': 45.80,   # TERAPIA OCUPACIONAL (padrão)
+            '60010145': 38.90,   # FONOAUDIOLOGIA (padrão)
+            '60010146': 42.30    # FISIOTERAPIA NEUROLOGICA (padrão)
         }
-        
+
         self.empresa_procedimentos = {
-            'NOTREDAME OU HAPVIDA': ['60010150', '00010015', '60010144', '60010145'],
-            'NOTREDAME OU HAPVIDA NEUROACOLHER': ['00010014', '60010146'],
-            'NOTREDAME OU HAPVIDA Libelula': ['60010142', '60010143']
+            'NOTREDAME OU HAPVIDA': ['60010150','62010204','62010212','65010035','60010126','61010073','62010123'],
+            'NOTREDAME OU HAPVIDA NEUROACOLHER': ['00010014'],
+            'NOTREDAME OU HAPVIDA Libelula': ['60010142', '60010363']
         }
     
     def get_connection(self):
