@@ -23,7 +23,7 @@ class DatabaseAnalysis:
             '00010015': 67.40,   # CONSULTA MEDICA ESPECIALIZADA
             '60010142': 800.00,  # Teste neuropsicologico
             '60010143': 180.00,  # AVALIACAO NEUROPSICOLOGICA
-            '60010363': 100.00,  # Consulta/sessao de neuropsicologia
+            '60010363': 80.00,  # Consulta/sessao de neuropsicologia
 
             '60010144': 45.80,   # TERAPIA OCUPACIONAL (padrão)
             '60010145': 38.90,   # FONOAUDIOLOGIA (padrão)
