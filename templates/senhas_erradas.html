@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Senhas Erradas - Sistema de Análise Médica{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="mb-3">
+                    <i class="fas fa-exclamation-triangle me-3"></i>
+                    Senhas Erradas Identificadas
+                </h2>
+                <p class="lead mb-0">Procedimentos não válidos para as empresas correspondentes</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="metric-value">{{ senhas | length }}</div>
+                <div class="text-white-50">Senhas Incorretas</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if senhas | length == 0 %}
+<!-- Nenhuma senha errada encontrada -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-success">
+            <div class="card-body text-center p-5">
+                <div class="icon-box status-success mx-auto mb-4" style="width: 80px; height: 80px;">
+                    <i class="fas fa-check-circle fa-3x"></i>
+                </div>
+                <h3 class="text-success mb-3">Nenhuma senha errada encontrada!</h3>
+                <p class="lead text-muted">
+                    Todos os procedimentos estão corretos para suas respectivas empresas.
+                    O sistema está funcionando perfeitamente.
+                </p>
+                <a href="{{ url_for('dados') }}" class="btn btn-success">
+                    <i class="fas fa-database me-2"></i>Ver Todos os Dados
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Métricas de Erros -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="metric-card card p-4">
+            <div class="d-flex align-items-center">
+                <div class="icon-box status-danger me-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <div class="metric-value text-danger">{{ senhas | length }}</div>
+                    <div class="metric-label">Total de Erros</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-card card p-4">
+            <div class="d-flex align-items-center">
+                <div class="icon-box status-warning me-3">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div>
+                    {% set empresas_afetadas = senhas | map(attribute='empresa') | unique | list %}
+                    <div class="metric-value text-warning">{{ empresas_afetadas | length }}</div>
+                    <div class="metric-label">Empresas Afetadas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="metric-card card p-4">
+            <div class="d-flex align-items-center">
+                <div class="icon-box status-danger me-3">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    {% set pacientes_afetados = senhas | map(attribute='usuario_codigo') | unique | list %}
+                    <div class="metric-value text-danger">{{ pacientes_afetados | length }}</div>
+                    <div class="metric-label">Pacientes Afetados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Distribuição por Empresa -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Distribuição de Erros por Empresa
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="errosChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Senhas Erradas -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-table me-2"></i>
+            Detalhamento das Senhas Erradas
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Paciente</th>
+                        <th>Código Procedimento</th>
+                        <th>Procedimento</th>
+                        <th>Senha</th>
+                        <th>Data Execução</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for senha in senhas %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box status-danger me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ senha.empresa }}</strong>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ senha.usuario_nome }}</strong>
+                                <br>
+                                <small class="text-muted">{{ senha.usuario_codigo }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">{{ senha.procedimento_codigo }}</span>
+                        </td>
+                        <td>{{ senha.procedimento_nome }}</td>
+                        <td>
+                            <span class="badge bg-warning text-dark">{{ senha.senha }}</span>
+                        </td>
+                        <td>{{ senha.data_execucao | date_format }}</td>
+                        <td>
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times me-1"></i>Inválido
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Resumo de Ações -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Ações Recomendadas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success me-2"></i>Verificações Necessárias:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Revisar procedimentos por empresa</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Validar autorizações médicas</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Corrigir senhas identificadas</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-shield-alt text-info me-2"></i>Prevenção:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Implementar validação automática</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Treinamento da equipe</li>
+                            <li><i class="fas fa-arrow-right text-primary me-2"></i>Monitoramento contínuo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if senhas | length > 0 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Contar erros por empresa
+    const senhas = {{ senhas | tojson }};
+    const empresaCount = {};
+    
+    senhas.forEach(senha => {
+        empresaCount[senha.empresa] = (empresaCount[senha.empresa] || 0) + 1;
+    });
+    
+    const ctx = document.getElementById('errosChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(empresaCount),
+            datasets: [{
+                data: Object.values(empresaCount),
+                backgroundColor: [
+                    'rgba(220, 38, 38, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(139, 69, 19, 0.8)',
+                    'rgba(168, 85, 247, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(220, 38, 38, 1)',
+                    'rgba(245, 158, 11, 1)',
+                    'rgba(139, 69, 19, 1)',
+                    'rgba(168, 85, 247, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
